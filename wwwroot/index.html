@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benim Listem</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="login-container">
+        <h2>Giriş Yap</h2>
+        <input type="text" id="loginUsername" placeholder="Kullanıcı Adı">
+        <input type="password" id="loginPassword" placeholder="Şifre">
+        <button onclick="login()">Giriş Yap</button>
+        <div class="links">
+            <a href="#" onclick="showRegister()">Kayıt Ol</a> |
+            <a href="#" onclick="showForgot()">Şifremi Unuttum</a>
+        </div>
+    </div>
+
+    <div id="register-container" class="hidden">
+        <h2>Yeni Kayıt</h2>
+        <input type="text" id="regUsername" placeholder="Kullanıcı Adı Belirle">
+        <input type="password" id="regPassword" placeholder="Şifre Belirle">
+        <label style="display:block; text-align:left; margin: 10px 0 5px; font-size:14px;">Güvenlik Sorusu:</label>
+        <select id="regQuestion" style="width:100%; padding:8px; margin-bottom:10px;">
+            <option>En sevdiğin yemek?</option>
+            <option>İlkokul öğretmeninin adı?</option>
+            <option>İlk evcil hayvanının adı?</option>
+        </select>
+        <input type="text" id="regAnswer" placeholder="Cevabın">
+        <button onclick="register()">Kayıt Ol</button>
+        <div class="links"><a href="#" onclick="showLogin()">Giriş Ekranına Dön</a></div>
+    </div>
+
+    <div id="forgot-container" class="hidden">
+        <h2>Şifre Sıfırla</h2>
+        <input type="text" id="forgotUsername" placeholder="Kullanıcı Adın">
+        <label style="display:block; text-align:left; margin: 10px 0 5px; font-size:14px;">Güvenlik Sorun Neydi?</label>
+        <select id="forgotQuestion" style="width:100%; padding:8px; margin-bottom:10px;">
+            <option>En sevdiğin yemek?</option>
+            <option>İlkokul öğretmeninin adı?</option>
+            <option>İlk evcil hayvanının adı?</option>
+        </select>
+        <input type="text" id="forgotAnswer" placeholder="Cevabın">
+        <input type="password" id="newPassword" placeholder="YENİ Şifren">
+        <button onclick="resetPassword()">Şifreyi Değiştir</button>
+        <div class="links"><a href="#" onclick="showLogin()">Giriş Ekranına Dön</a></div>
+    </div>
+
+    <div id="todo-container" class="hidden">
+        <div class="header-actions">
+            <h1 class="app-title">Yapılacaklar</h1>
+            <button onclick="logout()" style="background:red; font-size:12px;">Çıkış</button>
+        </div>
+        <div style="text-align:center; margin-bottom:10px;">
+            <button onclick="showActiveTasks()" class="nav-btn active">Listem</button>
+            <button onclick="showHistory()" class="nav-btn">Geçmiş</button>
+        </div>
+        <div class="input-area">
+            <div class="input-group"><label>Saat</label><input type="time" id="timeInput"></div>
+            <div class="input-group wide"><label>Görev</label><input type="text" id="taskInput" placeholder="Görev gir..."></div>
+            <button onclick="addTask()" class="add-btn">EKLE</button>
+        </div>
+        <div id="active-list-area" class="list-area">
+            <table><tbody id="taskList"></tbody></table>
+        </div>
+        <div id="history-list-area" class="list-area hidden">
+            <h3 style="color:green; text-align:center;">Tamamlananlar</h3>
+            <table><tbody id="historyList"></tbody></table>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

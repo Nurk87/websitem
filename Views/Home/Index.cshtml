@@ -1,0 +1,312 @@
+﻿@model List<MyTodoList.Models.TodoItem>
+@{
+    Layout = null;
+}
+
+
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #fdfbf7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        #todo-container {
+            background: white;
+            width: 600px;
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .app-title {
+            font-size: 24px;
+            color: #444;
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 12px;
+            background: white;
+            padding: 5px;
+            border-radius: 15px;
+            margin-bottom: 5px;
+            align-items: center;
+        }
+
+        .gorev-input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+            .gorev-input:focus {
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            }
+
+        .saat-input {
+            width: 90px;
+            padding: 12px;
+            border: none;
+            background-color: #f3f4f6;
+            border-radius: 12px;
+            color: #555;
+            cursor: pointer;
+        }
+
+        .add-btn {
+            background-color: #d1fae5;
+            color: #047857;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+            .add-btn:hover {
+                background-color: #a7f3d0;
+            }
+
+        .list-area {
+            margin-top: 20px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.3s;
+        }
+
+        .task-time {
+            font-weight: bold;
+            color: #333;
+            margin-right: 15px;
+            min-width: 50px;
+        }
+
+        .task-text {
+            flex-grow: 1;
+            color: #555;
+        }
+
+        .btn-action {
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 5px;
+        }
+
+        .btn-check {
+            color: #10b981;
+            background: #ecfdf5;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            margin-right: 5px;
+        }
+
+        .btn-delete {
+            color: #ef4444;
+            background: #fef2f2;
+            border-radius: 8px;
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* YAPILMADI (X) SİMGESİ İÇİN STİL */
+        .yapilmadi-simge {
+            color: red;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 18px;
+            display: none; /* Başlangıçta gizli */
+        }
+
+        #aiSuggestionBox {
+            font-size: 13px;
+            color: #6b7280;
+            margin-left: 5px;
+            margin-bottom: 20px;
+            height: 20px;
+        }
+    </style>
+
+
+    <div id="todo-container">
+        <div class="header-actions">
+            <h1 class="app-title" id="baslikSaat">--:--</h1>
+            <a href="/Home/Logout" style="text-decoration:none; color:#ef4444; font-size:14px; font-weight:bold;">Çıkış</a>
+        </div>
+
+        <form asp-action="GorevEkle" method="post" autocomplete="off">
+            <div class="input-area">
+                <input type="text" id="txtGorev" name="yapilacakIs" class="gorev-input" placeholder="Yapılacak iş..." required />
+                <input type="time" name="saat" class="saat-input" />
+                <button type="submit" class="add-btn">EKLE</button>
+            </div>
+            <div id="aiSuggestionBox" style="display:none;">
+                ✨ Öneri: <span id="aiText" style="font-style: italic; color: #4b5563;">...</span>
+            </div>
+        </form>
+
+        <div style="text-align:right; margin-bottom:10px;">
+            <a href="/Home/Gecmis" style="text-decoration:none; color:#6b7280; font-size:13px;">📋 Geçmişe Git</a>
+        </div>
+
+        <div class="list-area">
+            <h5 style="color:#9ca3af; font-weight:normal; margin-bottom:15px;">Yapılacaklar</h5>
+
+            @if (Model != null)
+            {
+                foreach (var item in Model)
+                {
+                    <div class="task-item" id="satir-@item.Id">
+                        <div style="display:flex; align-items:center;">
+                            <span class="task-time">@item.Saat</span>
+
+                            <span id="x-simge-@item.Id" class="yapilmadi-simge">❌</span>
+
+                            <span class="task-text">@item.YapilacakIs</span>
+                        </div>
+                        <div>
+                            <a href="/Home/GorevTamamla/@item.Id" class="btn-action btn-check">✔</a>
+                            <a href="/Home/GorevSil/@item.Id" class="btn-action btn-delete">Sil 🗑</a>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <script>
+        // C# Listesini JS'ye çevir
+        const gorevListesi = [];
+
+        @if (Model != null)
+        {
+                foreach (var item in Model)
+                {
+                        if (!item.IsCompleted && !string.IsNullOrEmpty(item.Saat) && item.Saat != "--:--")
+                        {
+                                <text>
+                                gorevListesi.push({
+                                    id: "@item.Id",
+                                    baslik: "@Html.Raw(item.YapilacakIs)",
+                                    saat: "@item.Saat",
+                                    uyarildi: false, // Daha önce uyarıldı mı?
+                                    ertelendi: false // Şu an erteleme modunda mı?
+                                });
+                                </text>
+                        }
+                }
+        }
+
+        // Her saniye kontrol et
+        setInterval(() => {
+            const now = new Date();
+            const saat = String(now.getHours()).padStart(2, '0');
+            const dakika = String(now.getMinutes()).padStart(2, '0');
+            const suAnkiSaat = saat + ":" + dakika;
+
+            // Saati güncelle
+            document.getElementById('baslikSaat').innerText = suAnkiSaat;
+
+            // Alarm Kontrolü
+            gorevListesi.forEach(gorev => {
+
+                // Eğer saat geldiyse VE daha önce tamamlanmadıysa VE şu an ertelenme süresinde değilse
+                if (gorev.saat === suAnkiSaat && !gorev.ertelendi) {
+
+                    gorev.ertelendi = true; // Alarm çalarken tekrar çalmasın diye kilitle
+
+                    // 100ms bekle sonra sor (Tarayıcı donmasın diye)
+                    setTimeout(() => {
+                        const cevap = confirm("⏰ SAAT GELDİ!\n\n" + gorev.baslik + "\n\nGörevi tamamladın mı?");
+
+                        if (cevap) {
+                            // EVET DEDİYSE:
+                            window.location.href = "/Home/GorevTamamla/" + gorev.id;
+                        } else {
+                            // HAYIR (İPTAL) DEDİYSE:
+
+                            // 1. Kırmızı X simgesini görünür yap
+                            const xSimge = document.getElementById('x-simge-' + gorev.id);
+                            if(xSimge) xSimge.style.display = 'inline';
+
+                            // 2. Satırı hafif kırmızı yap
+                            const satir = document.getElementById('satir-' + gorev.id);
+                            if(satir) satir.style.backgroundColor = '#fff0f0';
+
+                            // 3. ISRARCI MOD: 1 Dakika sonra tekrar sormak için kilidi aç
+                            // (Test etmek için 60000 yerine 10000 yazarsan 10 saniyede bir sorar)
+                            setTimeout(() => {
+                                gorev.ertelendi = false; // Kilidi aç, tekrar soracak!
+                            }, 60000); // 60000 ms = 1 Dakika
+                        }
+                    }, 100);
+                }
+            });
+
+        }, 1000);
+
+        // --- YAPAY ZEKA KODLARI (Aynı kaldı) ---
+        const oneriListesi = {
+            "matematik": "🧮 Formülleri bir kağıda yazarak çalışmak akılda kalıcı olur.",
+            "fizik": "⚛️ Konu anlatımı videosu izledikten sonra test çöz.",
+            "kimya": "🧪 Periyodik tabloyu yanına almayı unutma.",
+            "edebiyat": "📚 Yazar-Eser kartları hazırlayabilirsin.",
+            "tarih": "📜 Olayları tarih sırasına göre not al.",
+            "ingilizce": "🗣️ Kelimeleri sesli tekrar ederek çalış.",
+            "yazılım": "💻 Kodu kopyalama, kendin yazarak dene.",
+            "spor": "💪 Yanına su almayı ve ısınmayı unutma!",
+            "yürüyüş": "🎧 Sevdiğin bir müzik listesi aç.",
+            "su": "💧 Günde en az 2.5 litre su içmelisin.",
+            "market": "🛒 Gitmeden önce ihtiyaç listesi yap.",
+            "temizlik": "🧹 Önce dağınıklığı topla, sonra süpür.",
+            "kitap": "📖 Sessiz bir köşe bul ve telefonunu sessize al."
+        };
+
+        const txtInput = document.getElementById('txtGorev');
+        const suggestionBox = document.getElementById('aiSuggestionBox');
+        const aiText = document.getElementById('aiText');
+
+        txtInput.addEventListener('keyup', function() {
+            let metin = this.value.toLowerCase();
+            let bulundu = false;
+            if (metin.trim() === "") { suggestionBox.style.display = "none"; return; }
+            for (let kelime in oneriListesi) {
+                if (metin.includes(kelime)) {
+                    aiText.textContent = oneriListesi[kelime];
+                    suggestionBox.style.display = "block";
+                    bulundu = true;
+                    break;
+                }
+            }
+            if (!bulundu) suggestionBox.style.display = "none";
+        });
+    </script>
